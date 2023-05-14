@@ -3,7 +3,8 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 const app = express();
 const bodyParser = require("body-parser");
-
+var bcrypt = require('bcryptjs');
+var passwordHash = require('password-hash');
 const cors = require("cors");
 const db =require('./db');
 
@@ -38,7 +39,7 @@ app.get('/api/buyer', function (req, res) {
 });
 
 app.get('/api/attorney', function (req, res) {
-  db.query('SELECT * FROM attorney ', function (error, results, fields) {
+  db.query('SELECT * FROM attorney WHERE Verify = 1 ', function (error, results, fields) {
     if (error) {
       console.error(error);
       res.status(500).send("Error fetching data");
@@ -47,7 +48,16 @@ app.get('/api/attorney', function (req, res) {
     }
   });
 });
-
+app.get('/api/admin/attorney', function (req, res) {
+  db.query('SELECT * FROM attorney WHERE Verify = -1 ', function (error, results, fields) {
+    if (error) {
+      console.error(error);
+      res.status(500).send("Error fetching data");
+    } else {
+      res.send(results);
+    }
+  });
+});
 app.get('/api/comaplaint', function (req, res) {
   db.query('SELECT * FROM complaint', function (error, results, fields) {
     if (error) {
@@ -60,7 +70,7 @@ app.get('/api/comaplaint', function (req, res) {
 });
 
 app.get('/api/property', function (req, res) {
-  db.query('SELECT * FROM property', function (error, results, fields) {
+  db.query('SELECT * FROM property WHERE Verify =1', function (error, results, fields) {
     if (error) {
       console.error(error);
       res.status(500).send("Error fetching data");
@@ -70,8 +80,18 @@ app.get('/api/property', function (req, res) {
   });
 });
 
+app.get('/api/admin/property', function (req, res) {
+  db.query('SELECT * FROM property WHERE Verify = -1', function (error, results, fields) {
+    if (error) {
+      console.error(error);
+      res.status(500).send("Error fetching data");
+    } else {
+      res.send(results);
+    }
+  });
+});
 app.get('/api/seller', function (req, res) {
-  db.query('SELECT * FROM seller', function (error, results, fields) {
+  db.query('SELECT * FROM seller where Verify = -1', function (error, results, fields) {
     if (error) {
       console.error(error);
       res.status(500).send("Error fetching data");
@@ -89,10 +109,10 @@ app.post('/login',(req,res)=>{
   const username =req.body.values.email;
   const pass = req.body.values.password;
   const type = req.body.values.type;
-  
+  const hp = passwordHash.generate(pass);
   // Query the database for the user with the specified username and password
   const sql = `SELECT * FROM \`${type}\` WHERE Email = ? AND Password = ? `;
-  db.query(sql, [ username, pass], (err, results) => {
+  db.query(sql, [ username, hp], (err, results) => {
     if (err) {  
       throw err;
     }
@@ -118,12 +138,12 @@ app.listen(9091, () => {
 })
 
 app.put('/baccept', (req, res) => {
-  console.log(req.body);
+  
   const id = req.body.id;
   const verify = req.body.verify;
 
   db.query(
-    'UPDATE buyer SET verify = ? WHERE buyer_id = ?',
+    'UPDATE buyer SET verify = ? WHERE id = ?',
     [verify, id],
     (error, results) => {
       if (error) {
@@ -133,7 +153,54 @@ app.put('/baccept', (req, res) => {
     }
   );
 });
+app.put('/saccept', (req, res) => {
+  console.log(req.body);
+  const id = req.body.id;
+  const verify = req.body.verify;
 
+  db.query(
+    'UPDATE seller SET verify = ? WHERE id = ?',
+    [verify, id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error updating customer');
+      } 
+    }
+  );
+});
+app.put('/proaccept', (req, res) => {
+  
+  const id = req.body.id;
+  const verify = req.body.verify;
+
+  db.query(
+    'UPDATE property SET verify = ? WHERE id = ?',
+    [verify, id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error updating customer');
+      } 
+    }
+  );
+});
+app.put('/aaccept', (req, res) => {
+  
+  const id = req.body.id;
+  const verify = req.body.verify;
+
+  db.query(
+    'UPDATE attorney SET verify = ? WHERE id = ?',
+    [verify, id],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error updating customer');
+      } 
+    }
+  );
+});
 // PAYMENTS
 app.put('/paccept', (req, res) => {
   
@@ -151,6 +218,24 @@ app.put('/paccept', (req, res) => {
     }
   );
 });
+
+//payments fetch to admin
+app.get('/api/payment', function (req, res) {
+  
+  
+  db.query('SELECT * FROM payment ', (error, results) => {
+    
+    if (error) {
+      // console.log(id);
+      console.log(error);
+      res.status(500).send('Internal server error');
+    } else {
+      
+      res.json(results);
+    }
+  });
+});
+
 //payments fetch according to user to user database where the buyer can approve or deny the payments
 app.get('/api/bpayment', function (req, res) {
   const id = req.query.user; 
@@ -184,10 +269,25 @@ app.get('/api/spayment', function (req, res) {
     }
   });
 });
-
+app.get('/api/complaint', function (req, res) {
+  const id = req.query.user; 
+  const verify =req.query.verify;
+  
+  db.query('SELECT * FROM complaint', (error, results) => {
+    
+    if (error) {
+      // console.log(id);
+      console.log(error);
+      res.status(500).send('Internal server error');
+    } else {
+      
+      res.json(results);
+    }
+  });
+});
 app.post("/bsignup",(req,res)=>{
   
-  const buyerid ="test1234567";
+  
   const aadhaar =req.body.values.passport;
   const name= req.body.values.fullname;
   const email = req.body.values.email;
@@ -196,10 +296,13 @@ app.post("/bsignup",(req,res)=>{
   const address = req.body.values.address;
   const file = req.body.values.file;
   const verify = -1;
+ 
+  const hp =   bcrypt.hash(pass,4); 
   
-  db.query("INSERT INTO buyer(buyer_id,aadhar_id,Full_Name,Email,Contact_Number,Password,Address,verify,choose_file)VALUES (,?,?,?,?,?,?,?,?)",
+
+  db.query("INSERT INTO buyer(aadhar_id,Full_Name,Email,Contact_Number,Password,Address,verify,id_proof)VALUES (?,?,?,?,?,?,?,?)",
   [
-    buyerid,aadhaar,name,email,number,pass,address,verify,file
+    aadhaar,name,email,number,hp,address,verify,file
 
   ],(error, results) => {
 
