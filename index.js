@@ -24,6 +24,117 @@ app.use(expressSession({
 app.use(cookieParser());
 
 
+//POST methods
+
+app.post("/Bsignup",(req,res)=>{
+  
+  
+  const aadhaar =req.body.values.passport;
+  const name= req.body.values.fullname;
+  const email = req.body.values.email;
+  const number = req.body.values.mob;
+  const pass = req.body.values.password;
+  const address = req.body.values.address;
+  const file = req.body.values.file;
+  const verify = -1;
+ 
+  // const hp =   bcrypt.hash(pass,4); 
+  
+
+  db.query("INSERT INTO buyer(aadhar_id,Full_Name,Email,Contact_Number,Password,Address,verify,id_proof)VALUES (?,?,?,?,?,?,?,?)",
+  [
+    aadhaar,name,email,number,pass,address,verify,file
+
+  ],(error, results) => {
+
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.send("Values Inserted")
+    }
+
+  },);
+});
+
+
+app.post("/Ssignup", (req, res)=>{
+  const Full_Name = req.body.values.fullname;
+  const Email = req.body.values.email;
+  const Contact_Number = req.body.values.mob;
+  const Aadhar_id = req.body.values.passport;
+  const Password = req.body.values.password;
+  const Address = req.body.values.address;
+  const id_proof = req.body.values.file;
+  const Verify = -1;
+  db.query("INSERT INTO seller(Full_Name, Email, Contact_Number,Aadhar_id, Password, Address, id_proof,Verify) VALUES(?,?,?,?,?,?,?,?)",
+  [
+    Full_Name, Email, Contact_Number,Aadhar_id, Password, Address, id_proof,Verify
+  ],(error, results)=>{
+    if(error){
+      console.log(error);
+    }
+    else{
+      res.send("Sent successfully");
+      console.log("sent succesfully.")
+    }
+  },
+  );
+
+});
+
+app.post("/Asignup", (req, res)=>{
+  const Full_Name = req.body.values.fullname;
+  const Email = req.body.values.email;
+  const Contact_Number = req.body.values.mob;
+  const Aadhar_id = req.body.values.passport;
+  const Password = req.body.values.password;
+  const Address = req.body.values.address;
+  const id_proof = req.body.values.pfile;
+  const Attorney_Certificate = req.body.values.lfile;
+  const Verify = -1;
+  db.query("INSERT INTO attorney(Full_Name, Email, Contact_Number,Aadhar_id,Password, Address, id_proof, Attorney_Certificate,Verify) VALUES(?,?,?,?,?,?,?,?,?)",
+  [
+    Full_Name, Email, Contact_Number,Aadhar_id,Password, Address, id_proof, Attorney_Certificate,Verify
+  ],(error, results)=>{
+    if(error){
+      console.log(error);
+    }
+    else{
+      res.send("Sent successfully");
+      console.log("sent succesfully.")
+    }
+  },
+  );
+
+});
+
+
+app.post("/complaint", (req, res)=>{
+  const Full_Name = req.body.values.fullname;
+  const Email = req.body.values.email;
+  const Your_id = req.body.values.id;
+  const issue_id = req.body.values.issueid;
+  const Subject = req.body.values.subject;
+  const Descrp = req.body.values.descrp;
+  const Verify = -1;
+  // alert(req.body);
+  db.query("INSERT INTO complaint(Full_Name, Email, Your_id, issue_id, Subject, Descrp, Verify) VALUES(?,?,?,?,?,?,?)",
+  [
+    Full_Name, Email, Your_id, issue_id, Subject, Descrp, Verify
+  ],(error, results)=>{
+    if(error){
+      console.log(error);
+    }
+    else{
+      res.send("Sent successfully");
+      console.log("sent succesfully.")
+    }
+  },
+  );
+
+});
+
 
 
 
@@ -285,39 +396,6 @@ app.get('/api/complaint', function (req, res) {
     }
   });
 });
-app.post("/bsignup",(req,res)=>{
-  
-  
-  const aadhaar =req.body.values.passport;
-  const name= req.body.values.fullname;
-  const email = req.body.values.email;
-  const number = req.body.values.mob;
-  const pass = req.body.values.password;
-  const address = req.body.values.address;
-  const file = req.body.values.file;
-  const verify = -1;
- 
-  // const hp =   bcrypt.hash(pass,4); 
-  
-
-  db.query("INSERT INTO buyer(aadhar_id,Full_Name,Email,Contact_Number,Password,Address,verify,id_proof)VALUES (?,?,?,?,?,?,?,?)",
-  [
-    aadhaar,name,email,number,pass,address,verify,file
-
-  ],(error, results) => {
-
-    if (error) {
-      console.log(error);
-    }
-    else {
-      res.send("Values Inserted")
-    }
-
-  },);
-});
-
-
-
 
 app.post("/payment", (req, res) => {
 
