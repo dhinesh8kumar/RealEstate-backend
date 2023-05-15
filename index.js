@@ -3,8 +3,8 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 const app = express();
 const bodyParser = require("body-parser");
-var bcrypt = require('bcryptjs');
-var passwordHash = require('password-hash');
+// var bcrypt = require('bcryptjs');
+// var passwordHash = require('password-hash');
 const cors = require("cors");
 const db =require('./db');
 
@@ -109,10 +109,10 @@ app.post('/login',(req,res)=>{
   const username =req.body.values.email;
   const pass = req.body.values.password;
   const type = req.body.values.type;
-  const hp = passwordHash.generate(pass);
+  
   // Query the database for the user with the specified username and password
   const sql = `SELECT * FROM \`${type}\` WHERE Email = ? AND Password = ? `;
-  db.query(sql, [ username, hp], (err, results) => {
+  db.query(sql, [ username, pass], (err, results) => {
     if (err) {  
       throw err;
     }
@@ -297,12 +297,12 @@ app.post("/bsignup",(req,res)=>{
   const file = req.body.values.file;
   const verify = -1;
  
-  const hp =   bcrypt.hash(pass,4); 
+  // const hp =   bcrypt.hash(pass,4); 
   
 
   db.query("INSERT INTO buyer(aadhar_id,Full_Name,Email,Contact_Number,Password,Address,verify,id_proof)VALUES (?,?,?,?,?,?,?,?)",
   [
-    aadhaar,name,email,number,hp,address,verify,file
+    aadhaar,name,email,number,pass,address,verify,file
 
   ],(error, results) => {
 
@@ -357,7 +357,5 @@ app.post("/payment", (req, res) => {
     },);
 
 });
-
-
 
 
