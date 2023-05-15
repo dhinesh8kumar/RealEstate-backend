@@ -109,6 +109,38 @@ app.post("/Asignup", (req, res)=>{
 
 });
 
+app.post("/AddProperty", (req, res)=>{
+  const Property_Name = req.body.values.propname;
+  const Reg_no = req.body.values.reg;
+  const Owner_Name = req.body.values.ownername;
+  const Contact_Number = req.body.values.mob;
+  const Seller_id = req.body.values.sellerid;
+  const Address = req.body.values.address;
+  const Price = req.body.values.value;
+  const Area_Size = req.body.values.area;
+  const Descrp = req.body.values.desc;
+  const Purpose = req.body.values.purpose;
+  const Property_Image = req.body.values.image;
+  const Property_Doc = req.body.values.pdoc;
+  console.log(req.body.values);
+
+  const Verify = -1;
+  db.query("INSERT INTO property(Property_Name, Reg_no, Owner_Name,Contact_Number,Seller_id, Address, Price, Area_Size, Descrp, Purpose, Property_Image, Property_Doc, Verify ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+  [
+    Property_Name, Reg_no, Owner_Name,Contact_Number,Seller_id, Address, Price, Area_Size, Descrp, Purpose, Property_Image, Property_Doc, Verify 
+  ],(error, results)=>{
+    if(error){
+      console.log(error);
+    }
+    else{
+      res.send("Sent successfully");
+      console.log("sent succesfully.")
+    }
+  },
+  );
+
+});
+
 
 app.post("/complaint", (req, res)=>{
   const Full_Name = req.body.values.fullname;
