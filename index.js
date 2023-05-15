@@ -412,6 +412,33 @@ app.get('/api/spayment', function (req, res) {
     }
   });
 });
+app.get('/api/sproperty', function (req, res) {
+
+ 
+
+    const id=req.query.user;
+  
+    db.query('SELECT * FROM property where seller_id = ? ',[id] , (error, results) => {
+  
+     
+  
+      if (error) {
+  
+        console.log(error);
+  
+        res.status(500).send('Internal server error');
+  
+      } else {
+  
+       
+  
+        res.json(results);
+  
+      }
+  
+    });
+  
+  });
 app.get('/api/complaint', function (req, res) {
   const id = req.query.user; 
   const verify =req.query.verify;
