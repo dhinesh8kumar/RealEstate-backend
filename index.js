@@ -108,39 +108,33 @@ app.post("/Ssignup", async (req, res) => {
 
 app.post("/Asignup", async (req, res) => {
   const Full_Name = req.body.values.fullname;
-
   const Email = req.body.values.email;
-
   const Contact_Number = req.body.values.mob;
-
   const Aadhar_id = req.body.values.passport;
-
   const APassword = req.body.values.password;
-
   const Address = req.body.values.address;
-
   const id_proof = req.body.values.pfile;
-
   const Attorney_Certificate = req.body.values.lfile;
-
+  const Profile = req.body.values.profile;
   const Verify = -1;
 
   try {
     const hashPassword = await bcrypt.hash(APassword, saltRounds);
 
     db.query(
-      "INSERT INTO attorney(Full_Name, Email, Contact_Number,Aadhar_id,Password, Address, id_proof, Attorney_Certificate,Verify) VALUES(?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO attorney(Aadhar_id, Full_Name, Email, Contact_Number,Address,Verify, Password,id_proof, Attorney_Certificate, Profile) VALUES(?,?,?,?,?,?,?,?,?,?)",
 
       [
+        Aadhar_id,
         Full_Name,
         Email,
         Contact_Number,
-        Aadhar_id,
-        hashPassword,
         Address,
+        Verify,
+        hashPassword,
         id_proof,
         Attorney_Certificate,
-        Verify,
+        Profile,
       ],
       (error, results) => {
         if (error) {
@@ -161,42 +155,70 @@ app.post("/Asignup", async (req, res) => {
 
 app.post("/AddProperty", (req, res) => {
   const Property_Name = req.body.values.propname;
+
   const Reg_no = req.body.values.reg;
+
   const Owner_Name = req.body.values.ownername;
+
   const Contact_Number = req.body.values.mob;
+
   const Seller_id = req.body.values.sellerid;
+
   const Address = req.body.values.address;
+
   const Price = req.body.values.value;
+
   const Area_Size = req.body.values.area;
+
   const Descrp = req.body.values.desc;
+
   const Purpose = req.body.values.purpose;
+
   const Property_Image = req.body.values.image;
+
   const Property_Doc = req.body.values.pdoc;
+
   console.log(req.body.values);
 
   const Verify = -1;
+
   db.query(
     "INSERT INTO property(Property_Name, Reg_no, Owner_Name,Contact_Number,Seller_id, Address, Price, Area_Size, Descrp, Purpose, Property_Image, Property_Doc, Verify ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+
     [
       Property_Name,
+
       Reg_no,
+
       Owner_Name,
+
       Contact_Number,
+
       Seller_id,
+
       Address,
+
       Price,
+
       Area_Size,
+
       Descrp,
+
       Purpose,
+
       Property_Image,
+
       Property_Doc,
+
       Verify,
     ],
+
     (error, results) => {
       if (error) {
         console.log(error);
       } else {
         res.send("Sent successfully");
+
         console.log("sent succesfully.");
       }
     }
