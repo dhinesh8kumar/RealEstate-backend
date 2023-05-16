@@ -341,7 +341,6 @@ app.get("/api/seller", function (req, res) {
 });
 
 // LOGIN
-
 app.post("/login", async (req, res) => {
   // Retrieve username and password from request body
 
