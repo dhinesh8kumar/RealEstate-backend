@@ -565,3 +565,21 @@ app.post("/payment", (req, res) => {
     }
   );
 });
+
+app.put("/inactive", (req, res) => {
+  const id = req.body.id;
+
+  db.query(
+    "DELETE FROM property WHERE id = ?",
+
+    [id],
+
+    (error, results) => {
+      if (error) {
+        console.error(error);
+
+        res.status(500).send("Error updating customer");
+      }
+    }
+  );
+});
